@@ -2,6 +2,12 @@
 
 macOS 26 去掉了启动台,这是一个原生重做版:全屏 App 网格、分页、搜索、拖拽排序、文件夹,外加**自己实现的触发角**。
 
+## 下载安装
+
+1. 到 [Releases](https://github.com/zxing258974/Launchpad/releases) 下载最新的 `Launchpad-x.y.z.dmg`,打开后把「启动台」拖进「应用程序」(也可以下 zip 解压)。
+2. 发布包没有经过苹果公证,第一次打开会被拦下:到 **系统设置 › 隐私与安全性**,在页面下方找到「启动台」,点「仍要打开」。
+3. 需要 macOS 14 及以上,Apple 芯片与 Intel 通用。主要为 macOS 26(已去掉启动台)而做。
+
 ## 功能
 
 - **打开方式**
@@ -23,7 +29,8 @@ macOS 26 去掉了启动台,这是一个原生重做版:全屏 App 网格、分�
 只需要命令行工具(不需要 Xcode):
 
 ```bash
-scripts/build-app.sh --install   # 编译、签名、装到 /Applications 并启动
+scripts/build-app.sh --install   # 编译、签名、装到 /Applications 并启动(本机架构)
+scripts/package.sh               # 打发布包:通用二进制、ad-hoc 签名,输出 dist/ 下的 dmg、zip、SHA256SUMS.txt
 open /Applications/Launchpad.app --args --background   # 只在后台启动、不弹出面板
 scripts/test.sh                  # 跑全部测试
 scripts/test.sh --coverage       # 带覆盖率

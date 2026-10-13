@@ -4,3 +4,4 @@ build/
 Config/local.env
 *.xcodeproj
 .DS_Store
+dist/
