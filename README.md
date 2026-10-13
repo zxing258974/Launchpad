@@ -1,83 +1,92 @@
-# 启动台(Launchpad)
+# Launchpad
 
-macOS 26 去掉了启动台,这是一个原生重做版:全屏 App 网格、分页、搜索、拖拽排序、文件夹,外加**自己实现的触发角**。
+**English** · [中文](README.zh-CN.md)
 
-## 下载安装
+[![Release](https://img.shields.io/github/v/release/zxing258974/Launchpad)](https://github.com/zxing258974/Launchpad/releases/latest) [![Downloads](https://img.shields.io/github/downloads/zxing258974/Launchpad/total)](https://github.com/zxing258974/Launchpad/releases) ![Platform](https://img.shields.io/badge/platform-macOS%2014%2B-1f6feb) ![Swift](https://img.shields.io/badge/Swift-6-F05138?logo=swift&logoColor=white) [![License](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 
-1. 到 [Releases](https://github.com/zxing258974/Launchpad/releases) 下载最新的 `Launchpad-x.y.z.dmg`,打开后把「启动台」拖进「应用程序」(也可以下 zip 解压)。
-2. 发布包没有经过苹果公证,第一次打开会被拦下:到 **系统设置 › 隐私与安全性**,在页面下方找到「启动台」,点「仍要打开」。
-3. 需要 macOS 14 及以上,Apple 芯片与 Intel 通用。主要为 macOS 26(已去掉启动台)而做。
+macOS 26 removed Launchpad. This is a native rebuild of it: a full-screen grid of your apps with pages, search, drag-to-rearrange and folders — plus **its own hot corners** and the four-finger pinch.
 
-## 功能
+## Download
 
-- **打开方式**
-  - 触发角:光标推到屏幕角落(默认左下角,可多选、可要求同时按住修饰键、可设停留时间防误触),再推一次收起;多显示器下只认光标真正会被「卡住」的角
-  - 四指捏合(拇指和三根手指合拢)打开、张开收起,同旧启动台;经私有框架 MultitouchSupport 读触控板原始触点识别,读不到时自动不可用
-  - 全局快捷键(设置里录制,默认不设)
-  - 点程序坞 / 访达 / 聚焦里的「启动台」图标,或菜单栏图标
-- **网格**:默认每页 7×5,可调行列和图标大小;触控板横扫、鼠标滚轮、按住空白处拖动、点页码圆点、⌘← ⌘→ 翻页
-- **搜索**:打开即可直接输入;支持中文名、英文名、全拼、首字母(「微信」可用 `wx`、`weixin` 搜到,多音字如「音乐」两种读音都认);回车打开第一个结果,方向键选择
-- **整理**:拖动图标排序;拖到屏幕边缘停住翻页(拖过最后一页可新开一页);压在另一个图标正中停住再松手合成文件夹(按 App 分类自动起名);点文件夹名可改名;拖出文件夹面板即移出;右键可「在访达中显示」「移出文件夹」
-- **旧排列导入**:首次运行自动读取旧启动台留下的排列(含文件夹);设置里也能手动重新导入
-- **外观**:背景是当前桌面壁纸的模糊版(随外观切换的动态壁纸取对应深浅帧;壁纸太亮会自动压暗保证字看得清),「降低透明度」时改用纯深色;进出场、翻页、文件夹从图标处展开都有动效,「减弱动态效果」时改为淡入淡出
-- **键盘与读屏**:方向键选择(文件夹里也行)、回车打开、Tab 改文件夹名;VoiceOver 可直接打开、在访达中显示、移出文件夹、移到上一页/下一页
-- **稳妥**:App 更新/重装时会短暂消失,30 分钟内回来仍在原位(跨重启有效);同 bundle id 装了多份各占各的位置
-- **收起**:Esc(依次取消输入法组字 / 清空搜索 / 关文件夹 / 收起)、点空白处、打开 App、切走、锁屏;收起后前台还给原来的 App
+1. Grab the latest `Launchpad-x.y.z.dmg` from [Releases](https://github.com/zxing258974/Launchpad/releases), open it and drag Launchpad into Applications (a zip is available too).
+2. The build is not notarized by Apple, so macOS blocks the first launch. Go to **System Settings › Privacy & Security**, find Launchpad near the bottom of the page and click **Open Anyway**.
+3. Requires macOS 14 or later; universal binary for Apple silicon and Intel. Built mainly for macOS 26, where Launchpad is gone.
 
-## 构建与安装
+The app is localized as 启动台 on Chinese systems; its interface is currently in Chinese.
 
-只需要命令行工具(不需要 Xcode):
+## Features
+
+- **Ways to open**
+  - Hot corners: push the pointer into a screen corner (bottom-left by default; pick any combination, optionally require a modifier key and a dwell time to avoid accidental triggers), push again to close. With multiple displays, only corners where the pointer actually gets "stuck" count.
+  - Four-finger pinch (thumb and three fingers) to open, spread to close — just like the original. Raw trackpad contacts are read through the private MultitouchSupport framework; if it can't be loaded, the gesture is simply unavailable.
+  - A global keyboard shortcut (record one in Settings; none by default).
+  - Click the Launchpad icon in the Dock, Finder or Spotlight, or the menu bar icon.
+- **Grid**: 7×5 per page by default, with adjustable rows, columns and icon size. Change pages by swiping on the trackpad, with the mouse wheel, by dragging on empty space, by clicking the page dots, or with ⌘← / ⌘→.
+- **Search**: just start typing. Matches localized and English names, and for Chinese names full pinyin and initials too (微信 is found with `wx` or `weixin`; both readings of polyphonic characters are understood). Return opens the first result; arrow keys select.
+- **Organize**: drag icons to reorder; hold at a screen edge to flip pages (dragging past the last page creates a new one); hold an app over the center of another and release to make a folder (named after the app category); click a folder name to rename it; drag an app out of the folder panel to remove it. Right-click for Show in Finder and Remove from Folder.
+- **Your old layout**: on first launch, the arrangement left behind by the system Launchpad (folders included) is imported automatically. You can re-import it from Settings.
+- **Look**: the background is a blurred copy of your desktop picture (the right light/dark frame of dynamic wallpapers; bright wallpapers are dimmed automatically so labels stay readable), or a solid dark fill with Reduce Transparency. Opening, page flips and folders expanding from their icon are animated; with Reduce Motion they cross-fade instead.
+- **Keyboard and VoiceOver**: arrow keys to select (inside folders too), Return to open, Tab to rename a folder. VoiceOver can open items, show them in Finder, remove them from folders and move them to the previous or next page.
+- **Robust**: an app that briefly disappears while updating or reinstalling keeps its place if it returns within 30 minutes (even across restarts); multiple copies with the same bundle id each keep their own spot.
+- **Closing**: Esc (cancels input-method composition, then clears the search, closes the folder, then closes Launchpad), clicking empty space, opening an app, switching apps, or locking the screen. Focus returns to the app you were using.
+
+## Building
+
+Only the Command Line Tools are needed — no Xcode:
 
 ```bash
-scripts/build-app.sh --install   # 编译、签名、装到 /Applications 并启动(本机架构)
-scripts/package.sh               # 打发布包:通用二进制、ad-hoc 签名,输出 dist/ 下的 dmg、zip、SHA256SUMS.txt
-open /Applications/Launchpad.app --args --background   # 只在后台启动、不弹出面板
-scripts/test.sh                  # 跑全部测试
-scripts/test.sh --coverage       # 带覆盖率
+scripts/build-app.sh --install   # build, sign, install to /Applications and launch (native architecture)
+scripts/package.sh               # release build: universal binary, ad-hoc signed; dmg, zip and SHA256SUMS.txt in dist/
+open /Applications/Launchpad.app --args --background   # start in the background without showing the grid
+scripts/test.sh                  # run all tests
+scripts/test.sh --coverage       # with coverage
 ```
 
-签名:默认 ad-hoc。想用固定证书签名,把 `Config/local.env.example` 复制为 `Config/local.env` 填上 `SIGN_IDENTITY`(该文件不入库)。
+Signing is ad-hoc by default. To sign with a certificate of your own, copy `Config/local.env.example` to `Config/local.env` and set `SIGN_IDENTITY` (that file is git-ignored).
 
-图标由 `swift scripts/make-icon.swift <输出.iconset>` 生成,再用 `iconutil -c icns` 转成 `Resources/AppIcon.icns`。
+The icon is generated with `swift scripts/make-icon.swift <output.iconset>` and converted with `iconutil -c icns` into `Resources/AppIcon.icns`.
 
-## 用前提示
+## Before you start
 
-- 系统设置 › 桌面与程序坞 › **触发角** 里如果同一个角还设了别的动作(macOS 15 时代设成「启动台」的那个角尤其常见),两边会同时触发,建议改成「-」。设置页会检测并提醒。
-- 想开机就能用:设置 › 通用 › 登录时自动启动。
-- 隐藏菜单栏图标后,在启动台里按 ⌘, 回到设置。
+- In **System Settings › Desktop & Dock › Hot Corners**, if the same corner also has another action (the corner that used to open Launchpad is a common one), both will fire — set it to "-". Launchpad's Settings detects this and warns you.
+- In **System Settings › Trackpad › More Gestures**, turn off the system's own four-finger pinch (Apps) and spread (Show Desktop); otherwise they fire together with Launchpad's gesture. Settings warns about this too.
+- To have it ready after login: Settings › General › Launch at login.
+- If you hide the menu bar icon, press ⌘, inside Launchpad to get back to Settings.
 
-## 结构
+## Project layout
 
 ```
-Sources/LaunchpadCore/   纯逻辑,不依赖 UI:排列引擎、拼音搜索、热角几何与状态机、网格几何、旧库读取、App 扫描、落盘
+Sources/LaunchpadCore/   Pure logic, no UI: layout engine, pinyin search, hot-corner geometry and state machine,
+                         grid geometry, pinch detector, legacy database reader, app scanner, persistence
+Sources/CMultitouch/     Runtime (dlopen) wrapper around the private MultitouchSupport framework
 Sources/Launchpad/
-  App/        AppDelegate、设置、App 目录与图标缓存、打开 App、登录项、菜单栏
-  Overlay/    全屏面板(non-activating NSPanel)与交互状态模型(点击、拖拽、文件夹、翻页、键盘)
-  Input/      面板事件分发、热角监听、全局快捷键(Carbon)
-  Views/      SwiftUI 视图,位置全部来自 GridMetrics,与命中判断同源
-  Settings/   设置窗口与快捷键录制
-Tests/LaunchpadCoreTests/   核心逻辑单测
-Tests/LaunchpadAppTests/    交互测试:用假 App 目录驱动面板模型的鼠标、键盘、滚动处理
+  App/        AppDelegate, settings, app catalog and icon cache, launching apps, login item, menu bar, wallpaper
+  Overlay/    Full-screen panel and the interaction model (clicks, dragging, folders, paging, keyboard)
+  Input/      Panel event routing, hot-corner monitor, global shortcut (Carbon), trackpad pinch monitor
+  Views/      SwiftUI views; every position comes from GridMetrics, the same source used for hit-testing
+  Settings/   Settings window and shortcut recorder
+Tests/LaunchpadCoreTests/   Unit tests for the core logic
+Tests/LaunchpadAppTests/    Interaction tests driving the panel model's mouse, keyboard and scroll handling against fake app bundles
 ```
 
-数据:排列存在 `~/Library/Application Support/Launchpad/layout.json`(坏了会自动备份并重建),设置在 `com.zhangxing.Launchpad` 的 UserDefaults。
+Data: the layout lives in `~/Library/Application Support/Launchpad/layout.json` (backed up and rebuilt automatically if it gets corrupted); settings are in the `com.zhangxing.Launchpad` user defaults.
 
-## 实现要点
+## Implementation notes
 
-- 面板打开时用 `activate(ignoringOtherApps:)` 激活本 App:macOS 14 起新的 `activate()` 是协作式的,由热角/快捷键触发时会被系统拒绝(实测),不激活的话前台 App 随时能抢走键盘焦点
-- 鼠标、触控板、键盘都走面板上的本地事件监听,拖拽能跨越文件夹面板的出现与消失;输入法组字中的按键一律交给输入法
-- 渲染与点击命中共用 `GridMetrics`,拖拽中只有跟手的残影随鼠标重绘
+- When the panel opens, the app activates itself with `activate(ignoringOtherApps:)`. Since macOS 14 the newer `activate()` is cooperative and is refused when triggered from a hot corner or shortcut (verified); without activation, the frontmost app can steal keyboard focus from the panel at any time.
+- Mouse, trackpad and keyboard input all go through a local event monitor on the panel, so a drag survives the folder panel appearing and disappearing. Keys pressed during input-method composition always go to the input method.
+- Rendering and hit-testing share `GridMetrics`; while dragging, only the floating icon under the pointer redraws.
 
-## 已知限制
+## Known limitations
 
-- 四指捏合依赖未公开的系统框架,系统大版本更新后可能失效(失效时设置里会显示不可用,其他功能不受影响)。系统自带的四指捏合(macOS 26 里打开「App」)和张开(显示桌面)要在 系统设置 › 触控板 › 更多手势 里关掉,否则会同时触发;设置页会检测并提醒。
-- 不提供长按抖动删除 App(卸载请用访达)。
-- 只带传统 `.icns` 图标:macOS 26 在 16/32 像素处(访达列表等)会给它套一块灰底。要去掉需用 Xcode 的 actool 编出 `Assets.car` 并在 Info.plist 加 `CFBundleIconName`,本机只有命令行工具做不了。
+- The four-finger pinch relies on an undocumented system framework and may stop working after a major macOS update (Settings then shows it as unavailable; nothing else is affected).
+- There is no jiggle mode for deleting apps — use Finder to uninstall.
+- Only a classic `.icns` icon is included, so macOS 26 puts it on a gray plate at 16/32 px (Finder lists and similar). Fixing that needs Xcode's actool to build an `Assets.car` plus `CFBundleIconName` in Info.plist, which the Command Line Tools alone can't do.
 
-## 许可证
+## License
 
 [MIT](LICENSE)
 
-## 致谢
+## Acknowledgements
 
-- 触控板原始触点的数据结构与函数签名参照 [OpenMultitouchSupport](https://github.com/Kyome22/OpenMultitouchSupport)(MIT,Copyright © 2019 Takuto Nakamura)。
+- The trackpad contact data structures and function signatures follow [OpenMultitouchSupport](https://github.com/Kyome22/OpenMultitouchSupport) (MIT, Copyright © 2019 Takuto Nakamura).
