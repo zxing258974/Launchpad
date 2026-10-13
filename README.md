@@ -6,6 +6,23 @@
 
 macOS 26 removed Launchpad. This is a native rebuild of it: a full-screen grid of your apps with pages, search, drag-to-rearrange and folders — plus **its own hot corners** and the four-finger pinch.
 
+![Launchpad](docs/screenshots/grid.jpg)
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/search.jpg" alt="Search"></td>
+    <td width="50%"><img src="docs/screenshots/folder.jpg" alt="Folder"></td>
+  </tr>
+  <tr>
+    <td align="center">Search by name, full pinyin or initials</td>
+    <td align="center">Folders, opened in place</td>
+  </tr>
+</table>
+
+<p align="center"><img src="docs/screenshots/settings.png" alt="Settings" width="360"></p>
+
+<sub>Screenshots use demo data (fictional apps and a generated wallpaper). Regenerate them with `scripts/screenshots.sh`.</sub>
+
 ## Download
 
 1. Grab the latest `Launchpad-x.y.z.dmg` from [Releases](https://github.com/zxing258974/Launchpad/releases), open it and drag Launchpad into Applications (a zip is available too).
@@ -37,6 +54,7 @@ Only the Command Line Tools are needed — no Xcode:
 ```bash
 scripts/build-app.sh --install   # build, sign, install to /Applications and launch (native architecture)
 scripts/package.sh               # release build: universal binary, ad-hoc signed; dmg, zip and SHA256SUMS.txt in dist/
+scripts/screenshots.sh           # regenerate the README screenshots with demo data
 open /Applications/Launchpad.app --args --background   # start in the background without showing the grid
 scripts/test.sh                  # run all tests
 scripts/test.sh --coverage       # with coverage
@@ -65,6 +83,7 @@ Sources/Launchpad/
   Input/      Panel event routing, hot-corner monitor, global shortcut (Carbon), trackpad pinch monitor
   Views/      SwiftUI views; every position comes from GridMetrics, the same source used for hit-testing
   Settings/   Settings window and shortcut recorder
+  Demo/       Demo mode for screenshots (--demo / --demo-scene): fictional apps, icons and wallpaper, isolated from real data
 Tests/LaunchpadCoreTests/   Unit tests for the core logic
 Tests/LaunchpadAppTests/    Interaction tests driving the panel model's mouse, keyboard and scroll handling against fake app bundles
 ```

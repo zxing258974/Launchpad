@@ -15,7 +15,11 @@ final class IconProvider {
     @ObservationIgnored private var rasterizedSize = 0
     @ObservationIgnored private var inFlight: (size: Int, ids: Set<String>, task: Task<Void, Never>)?
 
+    /// 演示模式用生成的假图标
+    @ObservationIgnored var override: ((AppEntry) -> NSImage?)?
+
     func image(for app: AppEntry) -> NSImage {
+        if let override, let image = override(app) { return image }
         if let cached = images[Self.key(app)] { return cached }
         let icon = NSWorkspace.shared.icon(forFile: app.url.path)
         images[Self.key(app)] = icon
@@ -31,6 +35,7 @@ final class IconProvider {
     /// 同样的活已经在跑就不重开;返回进行中的任务,需要时可以等它完成。
     @discardableResult
     func prepare(_ apps: [AppEntry], pixelSize: Int) -> Task<Void, Never>? {
+        guard override == nil else { return nil }
         let size = max(pixelSize, 32)
         if size != rasterizedSize {
             rasterizedIDs.removeAll()

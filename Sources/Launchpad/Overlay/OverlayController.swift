@@ -49,6 +49,8 @@ final class OverlayController: NSObject, NSWindowDelegate {
     private let wallpaperView = NSView()
     /// 只让最近一次打开的背景渲染结果生效,迟到的旧结果丢弃
     private var backgroundTask: Task<Void, Never>?
+    /// 演示模式用固定的背景图代替桌面壁纸
+    var backgroundOverride: ((CGSize) -> CGImage?)?
 
     static let reducedTransparencyFill = NSColor(white: 0.12, alpha: 1)
 
@@ -80,8 +82,7 @@ final class OverlayController: NSObject, NSWindowDelegate {
         panel.alphaValue = 0
         previousApp = NSWorkspace.shared.frontmostApplication.flatMap { $0 == NSRunningApplication.current ? nil : $0 }
         panel.makeKeyAndOrderFront(nil)
-        // macOS 14 起 activate() 是协作式的,由热角/快捷键触发时会被拒绝(实测);旧接口仍然有效
-        (NSApp as LegacyActivation).activate(ignoringOtherApps: true)
+        NSApp.forceActivate()
         router.attach(to: panel)
         NSAnimationContext.runAnimationGroup { context in
             context.duration = Self.fadeIn
@@ -139,6 +140,11 @@ final class OverlayController: NSObject, NSWindowDelegate {
     private func applyBackground(for screen: NSScreen) {
         backgroundTask?.cancel()
         guard let layer = wallpaperView.layer else { return }
+        if let image = backgroundOverride?(screen.frame.size) {
+            layer.backgroundColor = nil
+            show(WallpaperProvider.Background(image: SendableImage(image: image), luminance: WallpaperProvider.brightLuminance(of: image)), in: layer, animated: false)
+            return
+        }
         if NSWorkspace.shared.accessibilityDisplayShouldReduceTransparency {
             layer.contents = nil
             layer.backgroundColor = Self.reducedTransparencyFill.cgColor
@@ -176,6 +182,7 @@ final class OverlayController: NSObject, NSWindowDelegate {
 
     /// 提前把各屏壁纸模糊好,首次打开不用等
     func prewarmBackgrounds() async {
+        guard backgroundOverride == nil else { return }
         for screen in NSScreen.screens { _ = await wallpapers.background(for: screen) }
     }
 
@@ -209,11 +216,3 @@ final class OverlayController: NSObject, NSWindowDelegate {
         return panel
     }
 }
-
-/// 经协议调用已弃用的 `activate(ignoringOtherApps:)`,不产生弃用告警
-@MainActor
-private protocol LegacyActivation {
-    func activate(ignoringOtherApps flag: Bool)
-}
-
-extension NSApplication: LegacyActivation {}

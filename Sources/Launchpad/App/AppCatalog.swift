@@ -30,16 +30,19 @@ final class AppCatalog {
         scanner: AppScanner,
         capacity: @escaping () -> Int,
         legacyDatabaseURL: @escaping () -> URL? = LegacyLaunchpadReader.defaultDatabaseURL,
-        missingGracePeriod: TimeInterval = AppCatalog.defaultMissingGracePeriod
+        missingGracePeriod: TimeInterval = AppCatalog.defaultMissingGracePeriod,
+        displayedStoreURL: URL? = nil
     ) {
         self.store = store
         self.scanner = scanner
         self.capacity = capacity
         self.legacyDatabaseURL = legacyDatabaseURL
         self.missingGracePeriod = missingGracePeriod
+        self.storeURL = displayedStoreURL ?? store.fileURL
     }
 
-    var storeURL: URL { store.fileURL }
+    /// 设置页里给用户看的排列文件位置(演示模式显示真实默认位置,而不是临时目录)
+    let storeURL: URL
 
     /// 按路径排序的已安装 App(同 bundle id 多份时分配顺序稳定)
     private var installedApps: [AppEntry] { apps.values.sorted { $0.url.path < $1.url.path } }

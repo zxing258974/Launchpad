@@ -22,7 +22,7 @@ final class SettingsWindowController: NSObject, NSWindowDelegate {
             window.center()
             self.window = window
         }
-        NSApp.activate()
+        NSApp.forceActivate()
         window?.makeKeyAndOrderFront(nil)
     }
 

@@ -6,6 +6,23 @@
 
 macOS 26 去掉了启动台,这是一个原生重做版:全屏 App 网格、分页、搜索、拖拽排序、文件夹,外加**自己实现的触发角**。
 
+![启动台](docs/screenshots/grid.jpg)
+
+<table>
+  <tr>
+    <td width="50%"><img src="docs/screenshots/search.jpg" alt="搜索"></td>
+    <td width="50%"><img src="docs/screenshots/folder.jpg" alt="文件夹"></td>
+  </tr>
+  <tr>
+    <td align="center">按名称、全拼、首字母搜索</td>
+    <td align="center">文件夹就地展开</td>
+  </tr>
+</table>
+
+<p align="center"><img src="docs/screenshots/settings.png" alt="设置" width="360"></p>
+
+<sub>截图使用演示数据(虚构的 App 和生成的壁纸),可用 `scripts/screenshots.sh` 重新生成。</sub>
+
 ## 下载安装
 
 1. 到 [Releases](https://github.com/zxing258974/Launchpad/releases) 下载最新的 `Launchpad-x.y.z.dmg`,打开后把「启动台」拖进「应用程序」(也可以下 zip 解压)。
@@ -35,6 +52,7 @@ macOS 26 去掉了启动台,这是一个原生重做版:全屏 App 网格、分�
 ```bash
 scripts/build-app.sh --install   # 编译、签名、装到 /Applications 并启动(本机架构)
 scripts/package.sh               # 打发布包:通用二进制、ad-hoc 签名,输出 dist/ 下的 dmg、zip、SHA256SUMS.txt
+scripts/screenshots.sh           # 用演示数据重新生成 README 截图
 open /Applications/Launchpad.app --args --background   # 只在后台启动、不弹出面板
 scripts/test.sh                  # 跑全部测试
 scripts/test.sh --coverage       # 带覆盖率
@@ -60,6 +78,7 @@ Sources/Launchpad/
   Input/      面板事件分发、热角监听、全局快捷键(Carbon)
   Views/      SwiftUI 视图,位置全部来自 GridMetrics,与命中判断同源
   Settings/   设置窗口与快捷键录制
+  Demo/       截图用的演示模式(--demo / --demo-scene):虚构 App、图标和壁纸,不碰真实数据
 Tests/LaunchpadCoreTests/   核心逻辑单测
 Tests/LaunchpadAppTests/    交互测试:用假 App 目录驱动面板模型的鼠标、键盘、滚动处理
 ```

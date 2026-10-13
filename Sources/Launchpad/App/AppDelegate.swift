@@ -3,7 +3,7 @@ import LaunchpadCore
 
 @MainActor
 final class AppDelegate: NSObject, NSApplicationDelegate {
-    private let settings = AppSettings()
+    private let settings = DemoMode.isEnabled ? AppSettings(defaults: DemoMode.freshDefaults()) : AppSettings()
     private let icons = IconProvider()
     private let hotCorners = HotCornerMonitor()
     private let hotKey = GlobalHotKey()
@@ -16,11 +16,21 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     /// 锁屏期间不响应触控板手势(否则解锁后会发现启动台开着)
     private var isScreenLocked = false
 
-    private lazy var catalog = AppCatalog(
-        store: LayoutStore(fileURL: LayoutStore.defaultFileURL),
-        scanner: AppScanner(excludedBundleIDs: [Bundle.main.bundleIdentifier ?? "com.zhangxing.Launchpad"]),
-        capacity: { [settings] in settings.capacity }
-    )
+    private lazy var catalog: AppCatalog = {
+        let capacity = { [settings] in settings.capacity }
+        guard DemoMode.isEnabled else {
+            return AppCatalog(
+                store: LayoutStore(fileURL: LayoutStore.defaultFileURL),
+                scanner: AppScanner(excludedBundleIDs: [Bundle.main.bundleIdentifier ?? "com.zhangxing.Launchpad"]),
+                capacity: capacity
+            )
+        }
+        let workspace = DemoMode.makeWorkspace()
+        return AppCatalog(
+            store: LayoutStore(fileURL: workspace.layoutFile), scanner: AppScanner(roots: [workspace.apps]),
+            capacity: capacity, legacyDatabaseURL: { nil }, displayedStoreURL: LayoutStore.defaultFileURL
+        )
+    }()
     private lazy var model = OverlayModel(catalog: catalog, settings: settings, icons: icons)
     private lazy var overlay = OverlayController(model: model)
     private lazy var settingsWindow = SettingsWindowController { [unowned self] in
@@ -35,6 +45,10 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         wireUp()
         [.hotCorners, .hotKey, .showMenuBarIcon, .pinchGesture].forEach(apply)
 
+        if DemoMode.isEnabled {
+            startDemo()
+            return
+        }
         Task {
             await catalog.refresh(force: true)
             guard let screen = OverlayController.screenUnderMouse() else { return }
@@ -45,6 +59,26 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             // 准备期间用户可能已经自己开过(热角、快捷键),那就不再自动弹出
             guard !launchedAtLogin, !overlay.hasBeenShown, let target = OverlayController.screenUnderMouse() else { return }
             overlay.show(on: target)
+        }
+    }
+
+    /// 演示模式:假数据装好后直接摆出要截的画面(见 scripts/screenshots.sh)
+    private func startDemo() {
+        icons.override = { DemoMode.icon(for: $0) }
+        overlay.backgroundOverride = { DemoMode.wallpaper(size: $0) }
+        Task {
+            await catalog.refresh(force: true)
+            catalog.commit(DemoMode.layout())
+            guard let screen = OverlayController.screenUnderMouse() else { return }
+            switch DemoMode.scene {
+            case .settings:
+                settingsWindow.show()
+            case .grid, .search, .folder:
+                overlay.show(on: screen)
+                try? await Task.sleep(for: .seconds(0.6))
+                if DemoMode.scene == .search { model.setQuery(DemoMode.searchQuery) }
+                if DemoMode.scene == .folder { model.openFolder(DemoMode.creativeFolderID) }
+            }
         }
     }
 

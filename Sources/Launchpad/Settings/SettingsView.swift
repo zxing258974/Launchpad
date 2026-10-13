@@ -88,7 +88,7 @@ struct SettingsView: View {
             Section {
                 HStack {
                     Button("从旧启动台导入…") { confirmImport = true }
-                        .disabled(!catalog.hasLegacyDatabase)
+                        .disabled(!catalog.hasLegacyDatabase && !DemoMode.isEnabled)
                         .help(catalog.hasLegacyDatabase ? "读取 macOS 15 及以前启动台留下的排列" : "没有找到旧启动台的数据")
                     Button("恢复默认排列…") { confirmReset = true }
                     Spacer()
@@ -96,7 +96,7 @@ struct SettingsView: View {
                         NSWorkspace.shared.activateFileViewerSelecting([catalog.storeURL])
                     }
                 }
-                if !catalog.hasLegacyDatabase {
+                if !catalog.hasLegacyDatabase, !DemoMode.isEnabled {
                     Text("没有找到旧启动台的数据,无法导入。").font(.caption).foregroundStyle(.secondary)
                 }
                 if let layoutMessage {
